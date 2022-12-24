@@ -1,20 +1,15 @@
----
-title: "SAS Course"
-author: "Douwe Horsthuis"
-date: "`r Sys.Date()`"
-output: github_document
-editor_options: 
-  markdown: 
-    wrap: 72
----
+SAS Course
+================
+Douwe Horsthuis
+2022-12-26
 
 # SAS steps
 
-A SAS script is created by coding several "steps". SAS has 2 types of
+A SAS script is created by coding several “steps”. SAS has 2 types of
 steps data steps or procedure steps. You can recognize what a step is
 about by looking at the first word of the code snipped. It either starts
 with DATA or PROC, but there are are also global statements that can
-happen outside of these steps.\
+happen outside of these steps.  
 Steps either end with a run statement, most of the time, or a quit
 statement (some of the time).
 
@@ -31,7 +26,7 @@ can be outputting a certain graph or doing statistics.
 
 ## Global statements
 
-These statements are things like "Title, Options, Libname etc. They
+These statements are things like “Title, Options, Libname etc. They
 exist outside of the steps, and do not need a run statement after them.
 
 # Simple Syntax error solving steps
@@ -47,7 +42,7 @@ SAS thought was wrong and how it handled it.
 
 Oddly enough, the column length will dictate how long the variable can
 be. So you have to predefined how many characters can be used. For
-example, if the length is 2, "East Coast" will become "EA".
+example, if the length is 2, “East Coast” will become “EA”.
 
 # Missing values
 
@@ -64,10 +59,10 @@ find your data.
 
 # Working with excel data
 
-When loading data that has column names that wouldn't work for SAS. You
+When loading data that has column names that wouldn’t work for SAS. You
 can use `OPTONS VALIDVARNAME=V7;` to make them valid. Things like spaces
 or special characters become underscores and every column name is
-shortened if needed to be shorter than 32 chars.\
+shortened if needed to be shorter than 32 chars.  
 Another important thing is to clear your library reference at the end of
 your program. This will otherwise create a lock for other people.
 `LIBNAME libref CLEAR;` Using `Sheet=Sheet_name` will allow you to load
@@ -100,9 +95,9 @@ run;
 
 # Procudures
 
-Print: creates a listing of all rows and columns of the data.\
-Means: simple summary statistics (N Mean Std dev Min Max).\
-Univariate: more detailed summary statistics.\
+Print: creates a listing of all rows and columns of the data.  
+Means: simple summary statistics (N Mean Std dev Min Max).  
+Univariate: more detailed summary statistics.  
 Freq: creates a frequency table for each column in the input table
 
 # WHERE statement
@@ -115,8 +110,8 @@ Proc procudure-name;
 RUN;
 ```
 
-For dates you follow the "SAS date constant". For example:
-*"ddmmmmyyyy"d;*
+For dates you follow the “SAS date constant”. For example:
+*“ddmmmmyyyy”d;*
 
 ## Missing values and WHERE statements
 
@@ -125,22 +120,22 @@ smaller then x. Make sure to include 0\< before, or all the missing
 values will be included. Example: `0<MinPressure<920`
 
 If you are specifically looking for missing values you can use
-`where Type=. or Type=" ";` Or you can use the special option of "is
-missing", "is NOT MISSING" or "is NULL";\
-`WHERE col-name IS MISSING;`\
-`WHERE col-name IS NOT MISSING;` `WHERE col-name IS NULL;`\
-`WHERE AGE IS MISSING;`\
+`where Type=. or Type=" ";` Or you can use the special option of “is
+missing”, “is NOT MISSING” or “is NULL”;  
+`WHERE col-name IS MISSING;`  
+`WHERE col-name IS NOT MISSING;` `WHERE col-name IS NULL;`  
+`WHERE AGE IS MISSING;`  
 `WHERE col-name IS null;`
 
 ## Wildcards for WHERE statements
 
-\% is a wildcard for any number of characters.\
+% is a wildcard for any number of characters.  
 \_ is a wildcard for a single character
 
-for
-[[example:\\\\](example:){.uri}](%5Bexample:%5D(example:)%7B.uri%7D){.uri}
+for <a href="%5Bexample:%5D(example:)%7B.uri%7D"
+class="uri">[example:\\](example:){.uri}</a>
 `Where city like "New%"; Give new york new delly etc.`Where city like
-"sant\_ %"\`\
+“sant\_ %”\`  
 Gives you for example Santa Clara or Santo Domingo
 
 # Format statements
@@ -156,29 +151,71 @@ number and whole numbers for Weight.
 You can turn sas (a number that starts at jan-1-1960) dates into a
 positive or negative number. This can be formatted using:
 
-+------------+------------+------------+------------+------------+
-| **To do    | **Use this | **List**   | **Input**  | **Result** |
-| this       | \...**     |            |            |            |
-| \...**     |            |            |            |            |
-+============+============+============+============+============+
-| Write SAS  | Date       | DATE**w.** | 14686      | 17MAR00    |
-| date       | formats    |            |            |            |
-| values in  |            |            |            |            |
-| re         |            |            |            |            |
-| cognizable |            |            |            |            |
-| forms      |            |            |            |            |
-+------------+------------+------------+------------+------------+
-| \          | \          | DATE9.     | 14686      | 17MAR2000a |
-|            |            |            |            |            |
-|            |            |            |            | \          |
-+------------+------------+------------+------------+------------+
-| \          | \          | DAY**w.**  | 14686      | 17         |
-+------------+------------+------------+------------+------------+
-| \          | \          | DD         | 14686      | 17/03/00   |
-|            |            | MMYY**w.** |            |            |
-+------------+------------+------------+------------+------------+
-| \          | \          | DDMMYY10.  | 14686      | 17/03/2000 |
-+------------+------------+------------+------------+------------+
+<table style="width:90%;">
+<colgroup>
+<col style="width: 18%" />
+<col style="width: 18%" />
+<col style="width: 18%" />
+<col style="width: 18%" />
+<col style="width: 18%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>To do this ...</strong></th>
+<th><strong>Use this ...</strong></th>
+<th><strong>List</strong></th>
+<th><strong>Input</strong></th>
+<th><strong>Result</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Write SAS date values in re cognizable forms</td>
+<td>Date formats</td>
+<td>DATE<strong>w.</strong></td>
+<td>14686</td>
+<td>17MAR00</td>
+</tr>
+<tr class="even">
+<td><br />
+</td>
+<td><br />
+</td>
+<td>DATE9.</td>
+<td>14686</td>
+<td><p>17MAR2000a</p>
+<p><br />
+</p></td>
+</tr>
+<tr class="odd">
+<td><br />
+</td>
+<td><br />
+</td>
+<td>DAY<strong>w.</strong></td>
+<td>14686</td>
+<td>17</td>
+</tr>
+<tr class="even">
+<td><br />
+</td>
+<td><br />
+</td>
+<td>DD MMYY<strong>w.</strong></td>
+<td>14686</td>
+<td>17/03/00</td>
+</tr>
+<tr class="odd">
+<td><br />
+</td>
+<td><br />
+</td>
+<td>DDMMYY10.</td>
+<td>14686</td>
+<td>17/03/2000</td>
+</tr>
+</tbody>
+</table>
 
 For all options [see this
 website](https://v8doc.sas.com/sashtml/lrcon/zenid-63.htm)
@@ -188,9 +225,9 @@ website](https://v8doc.sas.com/sashtml/lrcon/zenid-63.htm)
 You can combine multiple statements using `and` or `or`.
 `WHERE Type="SUV" or Type="truck" or Type="wagon;`
 
-However, it's better to use `in`;\
-`Where col-name IN (value1<...,value-n>);`\
-`Where col-name NOT IN (value1<...,value-n>);`\
+However, it’s better to use `in`;  
+`Where col-name IN (value1<...,value-n>);`  
+`Where col-name NOT IN (value1<...,value-n>);`  
 `Where Type IN ("SUV", "Truck", "Wagon");`
 
 # Macro variables
@@ -243,10 +280,10 @@ they always need to be double quotation marks.
 In the case of Money or dates it might be usefull or nececery to look at
 a formatted output because raw data does not make sense. In this case
 you can use the `FORMAT col-name(s) format;` function. The format needs
-the following input:\
-\<\$\>format-name<w>.<d> where \$= a characther\
-w= the width .=required delimiter\
-d=number of decimal places\
+the following input:  
+\<\$\>format-name<w>.<d> where \$= a characther  
+w= the width .=required delimiter  
+d=number of decimal places  
 For example: `format height weight 3.` which should give you 3 numbers
 for both of them.
 
@@ -261,7 +298,7 @@ based on the variable that follows `by`.
 
 For this you can use the `NoDUPKEY<DUPOUT=output-table>;` If you add the
 `DUPOUT=output-table` you will end up also with a table with all the
-duplicates.\
+duplicates.  
 If you add `By_all_;` It will only delete duplicates where all columns
 are the same. If it depends on sepecific columns you instead say
 `by col-name(s);`
@@ -298,104 +335,50 @@ that one**
 
 Your new column will use the length of the first variable you assign to
 it. To be on the safe side you can choose to define this yourself. If
-you add this before the first assignment:\
+you add this before the first assignment:  
 `length new-column-name $ length`
 
 ## Using Functions
 
 ### Common Numeric Functions
 
-+----------------------+---------------------------------------------+
-| **Common Numeric     | **What it Does**                            |
-| Functions**          |                                             |
-+:=====================+:============================================+
-| SUM (*num1*, *num2*, | Returns the sum of nonmissing arguments.    |
-| \...)                |                                             |
-+----------------------+---------------------------------------------+
-| MEAN (*num1*,        | Returns the arithmetic mean (average) of    |
-| *num2*, \...)        | nonmissing arguments.                       |
-+----------------------+---------------------------------------------+
-| MEDIAN (*num1*,      | Returns the median value of nonmissing      |
-| *num2*, \...)        | arguments.                                  |
-+----------------------+---------------------------------------------+
-| RANGE (*num1*,       | Returns the range of the nonmissing values. |
-| *num2*, \...)        |                                             |
-+----------------------+---------------------------------------------+
-| MIN (*num1*, *num2*, | Returns the smallest nonmissing value from  |
-| \...)                | a list of arguments.                        |
-+----------------------+---------------------------------------------+
-| MAX (*num1*, *num2*, | Returns the largest value from a list of    |
-| \...)                | arguments.                                  |
-+----------------------+---------------------------------------------+
-| N (*num1*, *num2*,   | Returns the number of nonmissing numeric    |
-| \...)                | values.                                     |
-+----------------------+---------------------------------------------+
-| NMISS (*num1*,       | Returns the number of null and SAS missing  |
-| *num2*, \...)        | numeric values.                             |
-+----------------------+---------------------------------------------+
+| **Common Numeric Functions** | **What it Does**                                                |
+|:-----------------------------|:----------------------------------------------------------------|
+| SUM (*num1*, *num2*, ...)    | Returns the sum of nonmissing arguments.                        |
+| MEAN (*num1*, *num2*, ...)   | Returns the arithmetic mean (average) of nonmissing arguments.  |
+| MEDIAN (*num1*, *num2*, ...) | Returns the median value of nonmissing arguments.               |
+| RANGE (*num1*, *num2*, ...)  | Returns the range of the nonmissing values.                     |
+| MIN (*num1*, *num2*, ...)    | Returns the smallest nonmissing value from a list of arguments. |
+| MAX (*num1*, *num2*, ...)    | Returns the largest value from a list of arguments.             |
+| N (*num1*, *num2*, ...)      | Returns the number of nonmissing numeric values.                |
+| NMISS (*num1*, *num2*, ...)  | Returns the number of null and SAS missing numeric values.      |
 
 #### Character functions
 
-+---------------------+---------------------------------------------+
-| **Character         | **What it Does**                            |
-| Function**          |                                             |
-+:====================+:============================================+
-| UPCASE (*char*)     | Changes letters in a character string to    |
-| LOWCASE(*char*)     | uppercase or lowercase                      |
-+---------------------+---------------------------------------------+
-| PROPCASE (*cha      | Changes the first letter of each word to    |
-| r                   | uppercase and other letters to lowercase    |
-| *,\<*delimiters*\>) |                                             |
-+---------------------+---------------------------------------------+
-| CATS (*char1*,      | Concatenates character strings and removes  |
-| *char2*, \...)      | leading and trailing blanks from each       |
-|                     | argument                                    |
-+---------------------+---------------------------------------------+
-| SUBSTR (*char*,     | Returns a substring from a character string |
-| *position*,         |                                             |
-| \<*length*\>)       |                                             |
-+---------------------+---------------------------------------------+
+| **Character Function**                    | **What it Does**                                                                          |
+|:------------------------------------------|:------------------------------------------------------------------------------------------|
+| UPCASE (*char*) LOWCASE(*char*)           | Changes letters in a character string to uppercase or lowercase                           |
+| PROPCASE (*cha r *,\<*delimiters*\>)      | Changes the first letter of each word to uppercase and other letters to lowercase         |
+| CATS (*char1*, *char2*, ...)              | Concatenates character strings and removes leading and trailing blanks from each argument |
+| SUBSTR (*char*, *position*, \<*length*\>) | Returns a substring from a character string                                               |
 
 ### Extracting dates
 
-+---------------+------------------------------------------------------+
-| **Date        | **What it Does**                                     |
-| Function**    |                                                      |
-+:==============+:=====================================================+
-| MONTH         | Returns a number from 1 through 12 that represents   |
-| (*SAS-date*)  | the month                                            |
-+---------------+------------------------------------------------------+
-| YEAR          | Returns the four-digit year                          |
-| (*SAS-date*)  |                                                      |
-+---------------+------------------------------------------------------+
-| DAY           | Returns a number from 1 through 31 that represents   |
-| (*SAS-date*)  | the day of the month                                 |
-+---------------+------------------------------------------------------+
-| WEEKDAY       | Returns a number from 1 through 7 that represents    |
-| (*SAS-date*)  | the day of the week (Sunday=1)                       |
-+---------------+------------------------------------------------------+
-| QTR           | Returns a number from 1 through 4 that represents    |
-| (*SAS-date*)  | the quarter                                          |
-+---------------+------------------------------------------------------+
+| **Date Function**    | **What it Does**                                                                 |
+|:---------------------|:---------------------------------------------------------------------------------|
+| MONTH (*SAS-date*)   | Returns a number from 1 through 12 that represents the month                     |
+| YEAR (*SAS-date*)    | Returns the four-digit year                                                      |
+| DAY (*SAS-date*)     | Returns a number from 1 through 31 that represents the day of the month          |
+| WEEKDAY (*SAS-date*) | Returns a number from 1 through 7 that represents the day of the week (Sunday=1) |
+| QTR (*SAS-date*)     | Returns a number from 1 through 4 that represents the quarter                    |
 
 ### Creating dates
 
-+----------------+-----------------------------------------------------+
-| **Date         | **What it Does**                                    |
-| Function**     |                                                     |
-+:===============+:====================================================+
-| TODAY ()       | Returns the current date as a numeric SAS date      |
-|                | value (no argument is required because the function |
-|                | reads the system clock)                             |
-+----------------+-----------------------------------------------------+
-| MDY (*month*,  | Returns a SAS date value from numeric month, day,   |
-| *day*, *year*) | and year values                                     |
-+----------------+-----------------------------------------------------+
-| YRDIF          | Calculates a precise age between two dates          |
-| (*startdate*,  |                                                     |
-| *enddate*,     |                                                     |
-| 'AGE')         |                                                     |
-+----------------+-----------------------------------------------------+
+| **Date Function**                     | **What it Does**                                                                                                           |
+|:--------------------------------------|:---------------------------------------------------------------------------------------------------------------------------|
+| TODAY ()                              | Returns the current date as a numeric SAS date value (no argument is required because the function reads the system clock) |
+| MDY (*month*, *day*, *year*)          | Returns a SAS date value from numeric month, day, and year values                                                          |
+| YRDIF (*startdate*, *enddate*, ‘AGE’) | Calculates a precise age between two dates                                                                                 |
 
 ### Date diff
 
@@ -407,7 +390,7 @@ explained
 
 # Conditional Processing with IF-THEN/ELSE
 
-SAS can use IF-THEN/ELSE statements. It's pretty much like any other
+SAS can use IF-THEN/ELSE statements. It’s pretty much like any other
 language. You can add `If statements` followed by a `then statment` and
 follow these up with `else if` - `then` or `else`. You can inlclude
 `and` / `or` statements.
@@ -457,7 +440,7 @@ like this: `title2 "Age=&age";`
 ## Lables for column names
 
 To make it more clear what your columns are about, it might be worth it
-to rename them. You can do this with the `label` function. For example\
+to rename them. You can do this with the `label` function. For example  
 `label MSRP="Manufacturer Suggested Retail Price";` Turns the column
 name MSRP into something everyone can understand better.If you use this
 in `Proc means` it will be added as a separate column. If you use this
@@ -485,12 +468,12 @@ add extra options.
 
 If you add `tables` you can create frequency reports for specific
 columns. Adding `/ nocum` to this will eliminate the cumulative
-columns.\
-Adding `order=freq` will order it in descending frequencies.\
+columns.  
+Adding `order=freq` will order it in descending frequencies.  
 Adding `nlevels` will give you information about the amount of unique
 variables. If you are working with dates, you can add a format statement
 and add `monname` for example, this will show you a frequency report by
-month, even though that might not exist in your data.\
+month, even though that might not exist in your data.  
 You can use build in graphics, ODS graphics (add the line
 `ods graphics on;` at the start of your script). You can now add plots.
 For example you can add after your tables statement `plot=freqplot`;
@@ -500,24 +483,29 @@ report.
 ### 2-way frequency report
 
 By adding a \* between columns you create a 2-way frequency report. For
-examples:\
+examples:  
 `tables BasinName*StarDate;` will give you a 2-way frequency report
 comparing these 2 columns. These will give frequency (how often they
 happen), Percent (percentage of this happening), Row percent (the whole
 row adds to 100%), and column percentage (all columns add to 100%). You
 can get rid of whatever you feel by adding `norow` or `nocol` or
-`nopercent`. You can present this differently, forexample you can use\
-`tables BasinName*StarDate crosslist;`\
-`tables BasinName*StarDate list;`  
-  
-## Summary Statistics Report  
-In the `Proc mean` line you can add the order and type of summary statistics you want to include. These can be for example `N` `mean` `median` `min` `max` `maxdec=n`. Most speak from themselves, `maxdec` needs a number of decimal points you want to include.  
-`Class` groups data and you can group by multiple columns if you need. If you do that you can use `ways` to look at the data in several ways. For example `ways 0 1 2` will give you multiple tables.  
+`nopercent`. You can present this differently, forexample you can use  
+`tables BasinName*StarDate crosslist;`  
+`tables BasinName*StarDate list;`
+
+## Summary Statistics Report
+
+In the `Proc mean` line you can add the order and type of summary
+statistics you want to include. These can be for example `N` `mean`
+`median` `min` `max` `maxdec=n`. Most speak from themselves, `maxdec`
+needs a number of decimal points you want to include.  
+`Class` groups data and you can group by multiple columns if you need.
+If you do that you can use `ways` to look at the data in several ways.
+For example `ways 0 1 2` will give you multiple tables.  
 `ways 0` gives you stats but based on the whole table.  
 `ways 1` give you separate tables per class.  
-`ways 2` gives you 1 table where it groups it in the table. 
-# Plots
+`ways 2` gives you 1 table where it groups it in the table. \# Plots
 
 You will need to add the line `ods graphics on;` at the start of your
-script. after this you can add plots. Here are examples of plots:\
+script. after this you can add plots. Here are examples of plots:  
 **proc freq** `plots=freqplot(orient=horizontal scale=percent);`

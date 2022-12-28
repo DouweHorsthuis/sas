@@ -32,7 +32,17 @@ can be outputting a certain graph or doing statistics.
 ## Global statements
 
 These statements are things like "Title, Options, Libname etc. They
-exist outside of the steps, and do not need a run statement after them.
+exist outside of the steps, and do not need a run statement after them.  
+  
+# Exporting data  
+You can export data using a `proc export` statement. The full step would be:  
+```SAS
+PROC EXPORT DATA=input-table OUTFILE="output-file" <DBMS=identifier><REPLACE>;  
+RUN;
+```
+the identifier field contains what type of file you like to create, CSV, TAB, DLM, XLSX,..., and include a file path to where it should store it. Which is easier with a macro variable. Once you have a macro variable you can just add `outfile="&macrovariable-name/filename.filetype"`.  
+  
+If you export to excel you can use add to your `ods` statement `options(sheet_name='name you want')` if you want to change specific sheet names. 
 
 # Simple Syntax error solving steps
 
@@ -181,7 +191,7 @@ positive or negative number. This can be formatted using:
 +------------+------------+------------+------------+------------+
 
 For all options [see this
-website](https://v8doc.sas.com/sashtml/lrcon/zenid-63.htm)
+website](https://v8doc.sas.com/sashtml/lrcon/zenid-63.html)
 
 # combining statement
 
@@ -240,11 +250,11 @@ they always need to be double quotation marks.
 
 # Formating your output
 
-In the case of Money or dates it might be usefull or nececery to look at
+In the case of Money or dates it might be useful or necessary to look at
 a formatted output because raw data does not make sense. In this case
 you can use the `FORMAT col-name(s) format;` function. The format needs
 the following input:\
-\<\$\>format-name<w>.<d> where \$= a characther\
+\<\$\>format-name<w>.<d> where \$= a character\
 w= the width .=required delimiter\
 d=number of decimal places\
 For example: `format height weight 3.` which should give you 3 numbers
@@ -263,7 +273,7 @@ For this you can use the `NoDUPKEY<DUPOUT=output-table>;` If you add the
 `DUPOUT=output-table` you will end up also with a table with all the
 duplicates.\
 If you add `By_all_;` It will only delete duplicates where all columns
-are the same. If it depends on sepecific columns you instead say
+are the same. If it depends on specific columns you instead say
 `by col-name(s);`
 
 # Creating new Columns
@@ -409,7 +419,7 @@ explained
 
 SAS can use IF-THEN/ELSE statements. It's pretty much like any other
 language. You can add `If statements` followed by a `then statment` and
-follow these up with `else if` - `then` or `else`. You can inlclude
+follow these up with `else if` - `then` or `else`. You can include
 `and` / `or` statements.
 
 ## Processing Multiple Statements with IF-THEN/DO
@@ -445,13 +455,13 @@ Run;
 
 Using `TITLE<N> "TITLE-TEXT";` give you a title for your report, and
 `FOOTNOTE<N> "footnote-text";` gives you a footnote. If your title
-should have sveral lines (up to 10), you can create `title1` line 1
+should have several lines (up to 10), you can create `title1` line 1
 `title2` line2 etc.
 
 ### Macro Variables in title
 
 You can use Macro Variables in the title. You can do this by adding the
-varible in double quotation marks as `title2` for example. Something
+variable in double quotation marks as `title2` for example. Something
 like this: `title2 "Age=&age";`
 
 ## Lables for column names
@@ -506,7 +516,7 @@ comparing these 2 columns. These will give frequency (how often they
 happen), Percent (percentage of this happening), Row percent (the whole
 row adds to 100%), and column percentage (all columns add to 100%). You
 can get rid of whatever you feel by adding `norow` or `nocol` or
-`nopercent`. You can present this differently, forexample you can use\
+`nopercent`. You can present this differently, for example you can use\
 `tables BasinName*StarDate crosslist;`\
 `tables BasinName*StarDate list;`  
   
@@ -520,4 +530,42 @@ In the `Proc mean` line you can add the order and type of summary statistics you
 
 You will need to add the line `ods graphics on;` at the start of your
 script. after this you can add plots. Here are examples of plots:\
-**proc freq** `plots=freqplot(orient=horizontal scale=percent);`
+**proc freq** `plots=freqplot(orient=horizontal scale=percent);`  
+If you want different styles you can use the `proc template;` procedure. If you only run:  
+```sas
+PROC template;
+  list styles;
+run;
+```
+You will get a list off all available styles. Once you find what you like, you add behind the `ODS` statement `style=TheOneYouWant`.  
+
+# ODS statment
+You can use ODS statements to edit the output files. For example if you export to excel you can use add to your `ods` statement `options(sheet_name='name you want')` if you want to change specific sheet names. Or As shown above you can change the style you want to use for your plots. 
+ 
+# SQL  
+If you write `proc sql;` you can start writing code in the SQL language and create a query. This might look something like this:  
+```SAS
+PROC SQL;
+SELECT clause
+  FROM clause
+    <WHERE clause>
+      <ORDER BY clause>;  
+  
+QUIT;
+``` 
+After quit you go back to coding in SAS. The clauses in <> are optional. 
+You can use the SAS formatting options to put something in a date format for example.  
+In SQL the `where` clause is NOT separate. It's instead a clause after the `from` statement. **In fact, all clauses from the SQL statement are not separated by a ;, but instead are one line.** After that you can add an `order by` clause. The default is ascending, but if you ad `desc` it'll be descending.  
+ 
+Often you will have to create tables, this is easy in SQL. Remember that you might have to use `drop table tablename`. If you do join and you have columns from different tables that have the same name, you need to qualify the column name. You do this like this:  
+`select TableName.ColumnName`. See here a full example:  
+```sas  
+Proc SQL;  
+select Season, Name, storm_summary.Basin,BasinName MaxWindMPH  
+  from pg1.storm_summary inner join pg1.storm_basincodes  
+  on storm_summary.basin=storm_basincodes.basin  
+  order by Season des, Name;  
+quit;  
+```  
+  
+Instead of typing full names, you can use aliases of the table names. In the `from clause` you write `from TableName as Alias`.

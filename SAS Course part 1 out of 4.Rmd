@@ -1,5 +1,5 @@
 ---
-title: "SAS Course"
+title: "SAS Course part 1 out of 4"
 author: "Douwe Horsthuis"
 date: "`r Sys.Date()`"
 output: github_document

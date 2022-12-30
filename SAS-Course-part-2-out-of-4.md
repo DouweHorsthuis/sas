@@ -1,7 +1,7 @@
 SAS Course part 2 out of 4
 ================
 Douwe Horsthuis
-2022-12-28
+2022-12-29
 
 # Data step
 
@@ -66,3 +66,36 @@ statement, if you follow this with `putlog_all_;` SAS will print it for
 you. This works especially well with the `obs=n` statement int the set
 step so you don’t run you whole table, because you will get a line for
 each row you run.
+
+## Implicit and explicit outputs
+
+At the end of your data step SAS generates a Implicit output. This is
+how it is run normally. However, you can choose a specific moment to
+generate an output or *explicit output.* You do this by adding `output;`
+to the script. After output has been reached, the data step creates the
+output and starts from the start. After using `output;` in the datastep,
+once or multiple times, the place where the *implicit output* would
+happen will be skipped. If you still need an output at the end, you need
+to also add `output;` there. If you add the name out the output table,
+your output will only be written there. So `output sales_low;` add
+whatever your output is to the sales_low table.
+
+### Dropping columns
+
+You can drop columns with the `drop column-name` line. But if you want
+to keep different different columns because you are outputting data to
+different tables you can specify this. The following code only drops the
+column `Returns` for one and `Inventory` for the other:
+
+``` sas
+data sales_high(drop=Returns) sales_low(drop=Inventory);  
+  set sashelp.shoes;
+  ... *whatever you are looking at  
+  drop Inventory Returns *not always needed;  
+run;
+```
+
+If you use a `drop` or `keep` statement in the `set` statement, that
+column will be dropped before it can be used for a calculation. If you
+use the `drop` or `keep` statement later it can still be used for
+calculations, but won’t end up in your output table.

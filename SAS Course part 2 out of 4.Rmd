@@ -12,9 +12,9 @@ editor_options:
 
 ## Order
 
-The order in the data step is important for some specific statments, but
-not all. During the dataphase there are 2 steps, **COMPILATION** and
-**EXECUTION**. In the complilation step SAS establish data attributes
+The order in the data step is important for some specific statements,
+but not all. During the data phase there are 2 steps, **COMPILATION**
+and **EXECUTION**. In the compilation step SAS establish data attributes
 and rules for execution. In the execution step SAS read, manipulate, and
 write data.
 
@@ -43,6 +43,12 @@ note is that a drop statement doesn't drop a column instantly, it only
 marks the column as needing to be dropped, so only after the statement
 is completed will the column be dropped.
 
+The following happen in the compilation stage, or are
+"compile-time-statements"
+
+-   Where
+-   Retain
+
 ### Execution
 
 SAS does 5 things in the execution phase:
@@ -60,9 +66,22 @@ SAS does 5 things in the execution phase:
 
 # Debugging
 
+## Sas Enterprize debugger
+
 When you use the software (enterprise) you can use the debugger. This
 will show you line by line if you run into errors and how your data
-behaves row by row.
+behaves row by row. **You can even change values during a loop to see
+how it impacts your code.**
+
+### Watchpoint
+
+You can add a "watchpoint" by clicking on the checkboxes in the
+debugger. If you do this, the debugger will run until that value
+changes.
+
+## Online platform
+
+### Putlog
 
 If you use the online platform you can use statements such as `putlog`
 to get similar information. For example
@@ -92,7 +111,7 @@ to keep different different columns because you are outputting data to
 different tables you can specify this. The following code only drops the
 column `Returns` for one and `Inventory` for the other:
 
-``` SAS
+``` sas
 data sales_high(drop=Returns) sales_low(drop=Inventory);  
   set sashelp.shoes;
   ... *whatever you are looking at  
@@ -104,3 +123,154 @@ If you use a `drop` or `keep` statement in the `set` statement, that
 column will be dropped before it can be used for a calculation. If you
 use the `drop` or `keep` statement later it can still be used for
 calculations, but won't end up in your output table.
+
+## Accumulating column
+
+An accumulating column will store a running total. For this to work, you
+have to make sure not to start with a missing value and that it doesn't
+reinitialize again with the beginning potentially missing value. You can
+do this using the `RETAIN column-name <initial-value>;` statement. This
+is a compile time statement, that sets a rule for one or more columns to
+keep their value. To create the accumulating column you can, after
+`RETAIN`, use `NewColumn=NewColumn+OldColumn;` But it's better to use
+`NewColumn=sum(NewColumn,OldColumn);`. This is because it will ignore
+missing values in the OldColumn.
+
+See this example:
+
+``` sas
+proc sort data=sashelp.shoes out=shoes_sorted;
+    by Region Product;
+run;
+
+data profitsummary;
+    set shoes_sorted;
+    Profit=Sales-Returns;
+    by Region Product;
+    Retain TotalProfit 0;
+    format TotalProfit dollar13.;
+
+    if first.Region then
+        TotalProfit=0;
+
+    if first.Product then
+        TotalProfit=0;
+    TotalProfit=sum(TotalProfit, Profit);
+run;
+```
+
+# Functions
+
+Functions changes the stored values, whereas the format affects only the
+displayed values.
+
+SAS uses a lot of functions. Here are some useful ones:
+
+## Calculation
+
+-   Ways to get more use out of simple functions:
+    -   `mean(quiz1,quiz2, quiz3);` gives you the average
+
+    -   `mean(of quiz1-quiz3);` give you the average (as long as there
+        is a sequential number.
+
+    -   `mean(of Q);` gives you the average, as long as columns start
+        with the specified character.
+-   Unfamiliar functions to me:
+    -   `INTCK('interval',start-date,end-date,<'method'>);` This can
+        calculate date intervals (year, month, week, weekday)
+
+        -   The discrete calculation will use calendar weeks (so maybe
+            after 2 days the week is ending) as measurement. This is
+            standard.
+
+        -   The continues calculation will just take 7 days from your
+            start date and call that a week. In this case the 'method'
+            is 'C'.
+
+    -   `INTNX('interval', start, increment <,'alignment'>)` This can
+        adjust a date by a set interval. For example if you have a Sales
+        date, and you want to fin a billing date.
+
+        -   if the **increment** is 0, your date will be set to the
+            first of that increment. So `intnx('month,Date,0)` will use
+            the date from the Date column, and shift it to the first of
+            that month. If you instead set the increment to 2, you go 2
+            months into the future.
+
+        -   if you don't use \<**'alignment'**\> the default alignment
+            is the start of your selected time period. If you would add
+            'end' it would instead give you the end of your selected
+            time period. possible: end, middle, same
+
+## Formatting
+
+-   using `--` this will allow you to put a start and end column. For
+    example `format Quiz1--AvgQuiz 3.1;` formats all columns from Quiz1
+    to AvgQuiz.
+-   using `_NUMERIC_` will format all the numeric columns.
+-   using `_CHARACTER_` will format all the character columns.
+-   using `_ALL_` will format all columns.
+
+## Character functions 
+
+-   `upcase(char)` all uppercase
+
+-   `PROPCASE(char,<delimiters>)` One Capital And The Rest Small. Not
+    defining the delimiter means all will be used (.,!-? etc.) this can
+    be a problem.
+
+-   `SUBSTR(char,position <,length>)` use the rest of the
+    string(variable,number of letter, optional: length of substring).
+
+-   `COMPBL(string)` Returns a character string with all multiple blanks
+    in the source string converted to single blanks.
+
+-   `COMPRESS(string <, characters>)` Returns a character string with
+    specified characters removed from the source string. This can be
+    multiple characters together in a row, order is not relevant.
+
+-   `STRIP(string)` Returns a character string with leading and trailing
+    blanks removed.
+
+-   `SCAN(string,n<,'delimiter'>)` String=variable name, n= number of
+    word to extract, delimiter= what separates the words. Not defining
+    the delimiter means all will be used (.,!-? etc.) this can be a
+    problem.
+
+-   `FIND(string, substring <,'modifiers'>)` string=variable name,
+    substring= the substring you are looking for, modifiers= i-case
+    insensitive T-trim leading and trailing blanks from string and
+    substring. The outcome is a number of where the substring starts, if
+    not found, then it is 0.
+
+-   `LENGTH(string)` Returns the length of a non-blank character string,
+    excluding trailing blanks; returns 1 for a completely blank string.
+
+-   `ANYDIGIT(string)` Returns the first position at which a digit is
+    found in the string.
+
+-   `ANYALPHA(string)` Returns the first position at which an alpha
+    character is found in the string.
+
+-   `ANYPUNCT (string)` Returns the first position at which punctuation
+    character is found in the string.
+
+-   `TRANWRD(source, target, replacement)` source= column name,
+    target=string to find, replacement=replacement string.
+
+-   `CAT(string1, … stringn)` Concatenates strings together, does not
+    remove leading or trailing blanks.
+
+-   `CATS (string1, … stringn)` Concatenates strings together, removes
+    leading or trailing blanks from each string. You can add delimiters
+    where you want them.
+
+-   `CATX ('delimiter', string1, … stringn)` Concatenates strings
+    together, removes leading or trailing blanks from each string, and
+    inserts the delimiter between each string.
+
+# Call routine
+
+A call routine functions similar to a function, but instead of returning
+a value, it alters column values or preforms other system functions

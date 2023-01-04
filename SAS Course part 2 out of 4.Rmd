@@ -203,6 +203,15 @@ SAS uses a lot of functions. Here are some useful ones:
             'end' it would instead give you the end of your selected
             time period. possible: end, middle, same
 
+    -   `ANYDTDTEw.` which stands for any date format. It takes longer
+        to calculate, but allows for dates that are not all written the
+        same way to be turned into the same type of values. if the date
+        is ambigues (1/12/2022, which can be januari 12th or first of
+        december, it uses the clock of your computer. This means it
+        won't be aware that people in the US don't know how to write
+        dates in a sensible way. You can adress this by using the
+        `DATESTYLE=MDY or DMY` option.
+
 ## Formatting
 
 -   using `--` this will allow you to put a start and end column. For
@@ -212,7 +221,7 @@ SAS uses a lot of functions. Here are some useful ones:
 -   using `_CHARACTER_` will format all the character columns.
 -   using `_ALL_` will format all columns.
 
-## Character functions 
+## Character functions
 
 -   `upcase(char)` all uppercase
 
@@ -270,7 +279,53 @@ SAS uses a lot of functions. Here are some useful ones:
     together, removes leading or trailing blanks from each string, and
     inserts the delimiter between each string.
 
-# Call routine
+## Call routine
 
 A call routine functions similar to a function, but instead of returning
 a value, it alters column values or preforms other system functions
+
+## Converting column type
+
+SAS will try to attempt to do this for you. It seems like it always will
+need a double check. It cannot deal with commas, but can deal with
+standard numeric values (e.g. 1 or 7643.12). SAS can also transform
+numbers into characters. While this all can be done automatically, if
+you need more control, you can also do it manually.
+
+`INPUT(source,format)` characters to numeric, where format dictates how
+to **read** the character string. Example: `Date2=input(Date,date9.);`
+This creates Date2 using the characters from Date reading it using the
+date9. format (which allows it to turn it into numbers). Pay extra
+attention when forcing decimal points.
+
+`PUT(source,format)` numeric to characters, where format dictates how to
+**write** the character string. Example: `DAY=put(DATE,downame3.);` Here
+it turns the numbers of date into a day name of 3 characters .
+
+### Change the column type of an existing column
+
+You cannot do this after the PDV is created. That is why you have to
+make a few changes. In your set statement you have to rename the
+existing column to a name that won't exist in the output. After that you
+can create a statement that sets the correct type (using `INPUT` or
+`PUT`).
+
+Example for `INPUT`:
+
+``` sas
+data work.stocks2;
+  set pg2.stocks2(rename=Volume=CharVolume));
+  Date2=input(Date,date9.);
+  Volume=input(CharVolume,Comma12.);
+  drop CharVolume;
+Run;
+```
+
+Example for `PUT`:
+
+``` SAS
+data atl_precip;
+  SET pg2.weather_atlanta(rename=(date=CharDate));
+  ZipCodeLast2=substr(put(ZipCode,z5.),4,2);
+Run;
+```

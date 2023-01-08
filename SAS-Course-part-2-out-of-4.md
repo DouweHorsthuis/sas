@@ -1,7 +1,7 @@
 SAS Course part 2 out of 4
 ================
 Douwe Horsthuis
-2023-01-04
+2023-01-08
 
 # Data step
 
@@ -41,8 +41,8 @@ is completed will the column be dropped.
 The following happen in the compilation stage, or are
 “compile-time-statements”
 
--   Where
--   Retain
+- Where
+- Retain
 
 ### Execution
 
@@ -163,116 +163,198 @@ SAS uses a lot of functions. Here are some useful ones:
 
 ## Calculation
 
--   Ways to get more use out of simple functions:
-    -   `mean(quiz1,quiz2, quiz3);` gives you the average
+- Ways to get more use out of simple functions:
+  - `mean(quiz1,quiz2, quiz3);` gives you the average
 
-    -   `mean(of quiz1-quiz3);` give you the average (as long as there
-        is a sequential number.
+  - `mean(of quiz1-quiz3);` give you the average (as long as there is a
+    sequential number.
 
-    -   `mean(of Q);` gives you the average, as long as columns start
-        with the specified character.
--   Unfamiliar functions to me:
-    -   `INTCK('interval',start-date,end-date,<'method'>);` This can
-        calculate date intervals (year, month, week, weekday)
+  - `mean(of Q);` gives you the average, as long as columns start with
+    the specified character.
+- Unfamiliar functions to me:
+  - `INTCK('interval',start-date,end-date,<'method'>);` This can
+    calculate date intervals (year, month, week, weekday)
 
-        -   The discrete calculation will use calendar weeks (so maybe
-            after 2 days the week is ending) as measurement. This is
-            standard.
+    - The discrete calculation will use calendar weeks (so maybe after 2
+      days the week is ending) as measurement. This is standard.
 
-        -   The continues calculation will just take 7 days from your
-            start date and call that a week. In this case the ‘method’
-            is ‘C’.
+    - The continues calculation will just take 7 days from your start
+      date and call that a week. In this case the ‘method’ is ‘C’.
 
-    -   `INTNX('interval', start, increment <,'alignment'>)` This can
-        adjust a date by a set interval. For example if you have a Sales
-        date, and you want to fin a billing date.
+  - `INTNX('interval', start, increment <,'alignment'>)` This can adjust
+    a date by a set interval. For example if you have a Sales date, and
+    you want to fin a billing date.
 
-        -   if the **increment** is 0, your date will be set to the
-            first of that increment. So `intnx('month,Date,0)` will use
-            the date from the Date column, and shift it to the first of
-            that month. If you instead set the increment to 2, you go 2
-            months into the future.
+    - if the **increment** is 0, your date will be set to the first of
+      that increment. So `intnx('month,Date,0)` will use the date from
+      the Date column, and shift it to the first of that month. If you
+      instead set the increment to 2, you go 2 months into the future.
 
-        -   if you don’t use \<**‘alignment’**\> the default alignment
-            is the start of your selected time period. If you would add
-            ‘end’ it would instead give you the end of your selected
-            time period. possible: end, middle, same
+    - if you don’t use \<**‘alignment’**\> the default alignment is the
+      start of your selected time period. If you would add ‘end’ it
+      would instead give you the end of your selected time period.
+      possible: end, middle, same
 
-    -   `ANYDTDTEw.` which stands for any date format. It takes longer
-        to calculate, but allows for dates that are not all written the
-        same way to be turned into the same type of values. if the date
-        is ambigues (1/12/2022, which can be januari 12th or first of
-        december, it uses the clock of your computer. This means it
-        won’t be aware that people in the US don’t know how to write
-        dates in a sensible way. You can adress this by using the
-        `DATESTYLE=MDY or DMY` option.
+  - `ANYDTDTEw.` which stands for any date format. It takes longer to
+    calculate, but allows for dates that are not all written the same
+    way to be turned into the same type of values. if the date is
+    ambigues (1/12/2022, which can be januari 12th or first of december,
+    it uses the clock of your computer. This means it won’t be aware
+    that people in the US don’t know how to write dates in a sensible
+    way. You can adress this by using the `DATESTYLE=MDY or DMY` option.
 
 ## Formatting
 
--   using `--` this will allow you to put a start and end column. For
-    example `format Quiz1--AvgQuiz 3.1;` formats all columns from Quiz1
-    to AvgQuiz.
--   using `_NUMERIC_` will format all the numeric columns.
--   using `_CHARACTER_` will format all the character columns.
--   using `_ALL_` will format all columns.
+- using `--` this will allow you to put a start and end column. For
+  example `format Quiz1--AvgQuiz 3.1;` formats all columns from Quiz1 to
+  AvgQuiz.
+- using `_NUMERIC_` will format all the numeric columns.
+- using `_CHARACTER_` will format all the character columns.
+- using `_ALL_` will format all columns.
+
+### Creating your own formatting
+
+You can also create your own custom formats. You can do this using the
+`PROC format` statement. See this example:
+
+``` sas
+PROC FORMAT;
+  VALUE format-name value-or-range-1 = 'formatted-value';
+RUN;
+```
+
+- format-name = the name for your format
+
+  - up to 32 char,
+
+  - char format -\$ followed by letter or underscore
+
+  - Numeric format - begins with letter or underscore
+
+  - cannot end in number or matching existing SAS format
+
+  - NO period after the format-name
+
+    - When using a range of numbers
+
+      - using 10-\<15 will exclude 15 but include everything between
+        10-15 including 10. 1
+
+      - 0\<-15 would do the same excluding 10 but including 15.
+
+      - You can also use key-words such as low or high.
+
+      - Other is important because it will include all values that do
+        not match the pre-defined values.
+
+- value-or-range-1= value or range of values that you want to convert to
+  formatted values
+
+  - Char values need quotes
+
+  - Numeric values do NOT need quotes
+
+- ‘formatted-value’ The formatted values that you want the values on the
+  left side to become.
+
+  - in quotation marks
+
+- You can use multiple formats in one statment
+
+See this example, where C will become complete and I will become
+Incomplete:
+
+``` sas
+PROC FORMAT;
+  value $regfmt 'C' ='Complete'
+                'I' ='Incomplete';
+RUN;
+```
+
+In this first one, it can be applied to each column in the table. In the
+next example it will be specified:
+
+``` sas
+PROC PRINT data=pg2.class_birthday;
+  format Registration $regfmt.;
+RUN;
+```
+
+**In when applying the format you need to add the period after the
+format.**
+
+Another example:
+
+``` sas
+PROC FORMAT;
+  value stdate low - '31DEC1999'd = '1999 and before'
+                    '01JAN2000'd - '31DEC2009'd = '2000 to 2009'
+                    '01JAN2010'd -high = 2010 and later'
+                    .= 'Not Supplied';
+  Value $region 'NA' ='Atlantic'
+                'WP', 'EP', 'SP'='Pacific' 
+                'NI', 'SI' = 'Indian'
+                ' ' ='Missing'
+                other='Unknown';
+RUN;
+```
 
 ## Character functions
 
--   `upcase(char)` all uppercase
+- `upcase(char)` all uppercase
 
--   `PROPCASE(char,<delimiters>)` One Capital And The Rest Small. Not
-    defining the delimiter means all will be used (.,!-? etc.) this can
-    be a problem.
+- `PROPCASE(char,<delimiters>)` One Capital And The Rest Small. Not
+  defining the delimiter means all will be used (.,!-? etc.) this can be
+  a problem.
 
--   `SUBSTR(char,position <,length>)` use the rest of the
-    string(variable,number of letter, optional: length of substring).
+- `SUBSTR(char,position <,length>)` use the rest of the
+  string(variable,number of letter, optional: length of substring).
 
--   `COMPBL(string)` Returns a character string with all multiple blanks
-    in the source string converted to single blanks.
+- `COMPBL(string)` Returns a character string with all multiple blanks
+  in the source string converted to single blanks.
 
--   `COMPRESS(string <, characters>)` Returns a character string with
-    specified characters removed from the source string. This can be
-    multiple characters together in a row, order is not relevant.
+- `COMPRESS(string <, characters>)` Returns a character string with
+  specified characters removed from the source string. This can be
+  multiple characters together in a row, order is not relevant.
 
--   `STRIP(string)` Returns a character string with leading and trailing
-    blanks removed.
+- `STRIP(string)` Returns a character string with leading and trailing
+  blanks removed.
 
--   `SCAN(string,n<,'delimiter'>)` String=variable name, n= number of
-    word to extract, delimiter= what separates the words. Not defining
-    the delimiter means all will be used (.,!-? etc.) this can be a
-    problem.
+- `SCAN(string,n<,'delimiter'>)` String=variable name, n= number of word
+  to extract, delimiter= what separates the words. Not defining the
+  delimiter means all will be used (.,!-? etc.) this can be a problem.
 
--   `FIND(string, substring <,'modifiers'>)` string=variable name,
-    substring= the substring you are looking for, modifiers= i-case
-    insensitive T-trim leading and trailing blanks from string and
-    substring. The outcome is a number of where the substring starts, if
-    not found, then it is 0.
+- `FIND(string, substring <,'modifiers'>)` string=variable name,
+  substring= the substring you are looking for, modifiers= i-case
+  insensitive T-trim leading and trailing blanks from string and
+  substring. The outcome is a number of where the substring starts, if
+  not found, then it is 0.
 
--   `LENGTH(string)` Returns the length of a non-blank character string,
-    excluding trailing blanks; returns 1 for a completely blank string.
+- `LENGTH(string)` Returns the length of a non-blank character string,
+  excluding trailing blanks; returns 1 for a completely blank string.
 
--   `ANYDIGIT(string)` Returns the first position at which a digit is
-    found in the string.
+- `ANYDIGIT(string)` Returns the first position at which a digit is
+  found in the string.
 
--   `ANYALPHA(string)` Returns the first position at which an alpha
-    character is found in the string.
+- `ANYALPHA(string)` Returns the first position at which an alpha
+  character is found in the string.
 
--   `ANYPUNCT (string)` Returns the first position at which punctuation
-    character is found in the string.
+- `ANYPUNCT (string)` Returns the first position at which punctuation
+  character is found in the string.
 
--   `TRANWRD(source, target, replacement)` source= column name,
-    target=string to find, replacement=replacement string.
+- `TRANWRD(source, target, replacement)` source= column name,
+  target=string to find, replacement=replacement string.
 
--   `CAT(string1, … stringn)` Concatenates strings together, does not
-    remove leading or trailing blanks.
+- `CAT(string1, … stringn)` Concatenates strings together, does not
+  remove leading or trailing blanks.
 
--   `CATS (string1, … stringn)` Concatenates strings together, removes
-    leading or trailing blanks from each string. You can add delimiters
-    where you want them.
+- `CATS (string1, … stringn)` Concatenates strings together, removes
+  leading or trailing blanks from each string. You can add delimiters
+  where you want them.
 
--   `CATX ('delimiter', string1, … stringn)` Concatenates strings
-    together, removes leading or trailing blanks from each string, and
-    inserts the delimiter between each string.
+- `CATX ('delimiter', string1, … stringn)` Concatenates strings
+  together, removes leading or trailing blanks from each string, and
+  inserts the delimiter between each string.
 
 ## Call routine
 

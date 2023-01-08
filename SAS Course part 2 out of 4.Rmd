@@ -221,6 +221,93 @@ SAS uses a lot of functions. Here are some useful ones:
 -   using `_CHARACTER_` will format all the character columns.
 -   using `_ALL_` will format all columns.
 
+### Creating your own formatting
+
+You can also create your own custom formats. You can do this using the
+`PROC format` statement. See this example:
+
+``` SAS
+PROC FORMAT;
+  VALUE format-name value-or-range-1 = 'formatted-value';
+RUN;
+```
+
+-   format-name = the name for your format
+
+    -   up to 32 char,
+
+    -   char format -\$ followed by letter or underscore
+
+    -   Numeric format - begins with letter or underscore
+
+    -   cannot end in number or matching existing SAS format
+
+    -   NO period after the format-name
+
+        -   When using a range of numbers
+
+            -   using 10-\<15 will exclude 15 but include everything
+                between 10-15 including 10. 1
+
+            -   0\<-15 would do the same excluding 10 but including 15.
+
+            -   You can also use key-words such as low or high.
+
+            -   Other is important because it will include all values
+                that do not match the pre-defined values.
+
+-   value-or-range-1= value or range of values that you want to convert
+    to formatted values
+
+    -   Char values need quotes
+
+    -   Numeric values do NOT need quotes
+
+-   'formatted-value' The formatted values that you want the values on
+    the left side to become.
+
+    -   in quotation marks
+
+-   You can use multiple formats in one statment
+
+See this example, where C will become complete and I will become
+Incomplete:
+
+``` SAS
+PROC FORMAT;
+  value $regfmt 'C' ='Complete'
+                'I' ='Incomplete';
+RUN;
+```
+
+In this first one, it can be applied to each column in the table. In the
+next example it will be specified:
+
+``` SAS
+PROC PRINT data=pg2.class_birthday;
+  format Registration $regfmt.;
+RUN;
+```
+
+**In when applying the format you need to add the period after the
+format.**
+
+Another example:
+
+``` SAS
+PROC FORMAT;
+  value stdate low - '31DEC1999'd = '1999 and before'
+                    '01JAN2000'd - '31DEC2009'd = '2000 to 2009'
+                    '01JAN2010'd -high = 2010 and later'
+                    .= 'Not Supplied';
+  Value $region 'NA' ='Atlantic'
+                'WP', 'EP', 'SP'='Pacific' 
+                'NI', 'SI' = 'Indian'
+                ' ' ='Missing'
+                other='Unknown';
+RUN;
+```
+
 ## Character functions
 
 -   `upcase(char)` all uppercase
@@ -323,7 +410,7 @@ Run;
 
 Example for `PUT`:
 
-``` SAS
+``` sas
 data atl_precip;
   SET pg2.weather_atlanta(rename=(date=CharDate));
   ZipCodeLast2=substr(put(ZipCode,z5.),4,2);

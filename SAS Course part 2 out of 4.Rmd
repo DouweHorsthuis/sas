@@ -226,7 +226,7 @@ SAS uses a lot of functions. Here are some useful ones:
 You can also create your own custom formats. You can do this using the
 `PROC format` statement. See this example:
 
-``` SAS
+``` sas
 PROC FORMAT;
   VALUE format-name value-or-range-1 = 'formatted-value';
 RUN;
@@ -273,7 +273,7 @@ RUN;
 See this example, where C will become complete and I will become
 Incomplete:
 
-``` SAS
+``` sas
 PROC FORMAT;
   value $regfmt 'C' ='Complete'
                 'I' ='Incomplete';
@@ -283,7 +283,7 @@ RUN;
 In this first one, it can be applied to each column in the table. In the
 next example it will be specified:
 
-``` SAS
+``` sas
 PROC PRINT data=pg2.class_birthday;
   format Registration $regfmt.;
 RUN;
@@ -294,7 +294,7 @@ format.**
 
 Another example:
 
-``` SAS
+``` sas
 PROC FORMAT;
   value stdate low - '31DEC1999'd = '1999 and before'
                     '01JAN2000'd - '31DEC2009'd = '2000 to 2009'
@@ -307,6 +307,63 @@ PROC FORMAT;
                 other='Unknown';
 RUN;
 ```
+
+### Use a table to create a custom format
+
+It can be tedious to create a format if you have to add a lot of
+information. You could use a table for this. The table needs to have at
+least 3 columns. The first on needs to have the format name. This might
+need a dollar sign if it's character based. A start and an Label column.
+If you have a range, you also need an end column.
+
+if you use the following code you can turn table 1 into table 2.
+
+| Sub_Basin | SubBasin_Name     |
+|-----------|-------------------|
+| AS        | Arabian Sea       |
+| BB        | Bay of bengal     |
+| EA        | Eastern Australia |
+
+table 1
+
+| FormatName | Start | Label             |
+|------------|-------|-------------------|
+| \$SBformat | AS    | Arabian Sea       |
+| \$SBformat | BB    | Bay of Bengal     |
+| \$SBformat | EA    | Eastern Australia |
+
+table 2 (ready for formatting)
+
+``` SAS
+data work.sbdata;
+  retain FMTNAM '$sbfmt';
+  set pg2.sorm_subbasincode(rename=(sub_Basin=Start SubBasin_Name=Label));
+  Keep Start Label FMTNAME;
+Run;
+```
+
+The format can now be created using the `cntlin` statement like this:
+
+``` SAS
+PROC FORMAT cntlin=work.sbdata;
+run;
+```
+
+### Storing Custom Formats
+
+SAS will store custom formats by default in work.formats or
+library.formats. But you can choose to store them somewhere else. If you
+add `library=NameOfLibrary` to the `proc format` line you store your new
+custom format in a specific library. You can also choose to add
+`proc format library=NameOfLibrary.format;`
+
+### Finding Custom Formats 
+
+SAS will store custom formats by default in work.formats or
+library.formats. But if you store them somewhere else you can use the
+`option fmtsearch` statement to search. For example
+`option fmtsearch=(pg2.myfmts sashelp);` will search in the myftms
+folder of pg2 and in the sashelp folder.
 
 ## Character functions
 

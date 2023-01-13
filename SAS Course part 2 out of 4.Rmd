@@ -334,7 +334,7 @@ table 1
 
 table 2 (ready for formatting)
 
-``` SAS
+``` sas
 data work.sbdata;
   retain FMTNAM '$sbfmt';
   set pg2.sorm_subbasincode(rename=(sub_Basin=Start SubBasin_Name=Label));
@@ -344,7 +344,7 @@ Run;
 
 The format can now be created using the `cntlin` statement like this:
 
-``` SAS
+``` sas
 PROC FORMAT cntlin=work.sbdata;
 run;
 ```
@@ -357,7 +357,7 @@ add `library=NameOfLibrary` to the `proc format` line you store your new
 custom format in a specific library. You can also choose to add
 `proc format library=NameOfLibrary.format;`
 
-### Finding Custom Formats 
+### Finding Custom Formats
 
 SAS will store custom formats by default in work.formats or
 library.formats. But if you store them somewhere else you can use the
@@ -473,3 +473,114 @@ data atl_precip;
   ZipCodeLast2=substr(put(ZipCode,z5.),4,2);
 Run;
 ```
+
+# Combining tables
+
+In SAS there are multiple ways of combining tables.
+
+## Concatenating tables
+
+If tables have all the same columns combining them is easy. You can do
+this with the following statement:
+
+``` sas
+DATA output-table;
+  SET input-table1 input-table2 ...;
+RUN;
+```
+
+If 2 columns are the same, but have a different name you can use the
+`TableNameX(rename=(NameColumnOfTableX=NameColumnOfTableY)`
+
+When you do this, **the attributes of the column are set by the first
+time the column is created,** so you can use a `length` statement before
+you reference the first table to make sure it has the correct length.
+
+## One-to-one merge
+
+If your 2 tables have columns that are identical and have the same
+amount of rows, you can do a `Merge`. **The data should be sorted before
+you merge.**
+
+![](images/image-1708068600.png)
+
+To merge 2 tables see the following code:
+
+``` sas
+DATA output-table;
+  Merge input-table1 input-table2...;
+  by By-column(s);
+RUN;
+```
+
+SAS merges rows one by one. Checking each time of row 1 from table 1 is
+the same as row 1 from table 2, after that if row 2 from table 1 is the
+same as row 2 from table 2 etc.
+
+## One-to-many merge
+
+Using the same code as before, sas will after it completes the first
+row, move on to the second. But if the second row of table one doesn't
+match the second row of table two like so:
+
+![SAS will look if the previous rows match. Like this SAS doesn't just
+merges row z for table x with row z for table y, but also checks if row
+z-1 from table y matches. ](images/image-1364642678.png)
+
+## Merging non-matching rows
+
+When you merge non-matching rows, SAS will use the PDV to first create a
+new row in you output table with the input from the table that was
+referenced first. If both rows are non-matching, it will do the same for
+the table that was referenced after that.
+
+![](images/image-1103930346.png)
+
+In the example above, the merge statement is:
+
+`merge pg2.class_update pg2.class_teachers;` So it will create an output
+with David because the class_update table is the first one in the merge
+statement.
+
+### Identifying matching and non-matching values
+
+If you use the `in=TempVariableName` after your table reference in the
+merge statement, you can only look for people that are in both tables.
+
+![](images/image-1384303340.png)
+
+To include people that are in both table you can add:
+
+`if inUpdate=1 and inTeachers=1;`
+
+### Merging tables with extra matching Column Names
+
+If you have tables that have column names that match, SAS will overwrite
+the value for each subsequenct table. So only the last table that is
+referenced will have their value stored. This can be a problem as shown
+in the example below. By using the
+`(rename=OrgColumnName=NewColumnName))` statement you can preverent this
+overwriting.
+
+![](images/image-264731960.png)
+
+## Merging multiple tables
+
+You can merge multiple tables, however you need to do this in steps. You
+can simple write multiple data merge steps. As long as you make sure to
+sort correctly before merging.
+
+### Using SQL vs DATA steps
+
+This specific task is easier using a `proc SQL` statement, because you
+can do it in one statement. There are advantages to either way of doing
+it:
+
+| DATA step merge                                                           | PROC SQL join                                                                      |
+|---------------------------------------------------------------------------|------------------------------------------------------------------------------------|
+| requires sorted input data                                                | does not require sorted data                                                       |
+| efficient, sequential processing                                          | matching columns do not need the same name                                         |
+| can create multiple output tables for matches and non-matches in one step | easy to define complex matching criteria between multiple tables in a single query |
+| provides addition complex data processing syntax                          | can be used to create Cartesian product for many to many joins                     |
+
+: DATA step Merge VS PROC SQL join

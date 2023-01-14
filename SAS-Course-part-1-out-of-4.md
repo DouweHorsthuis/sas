@@ -1,7 +1,68 @@
 SAS Course part 1 out of 4
 ================
 Douwe Horsthuis
-2022-12-28
+2023-01-14
+
+- <a href="#sas-steps" id="toc-sas-steps">SAS steps</a>
+  - <a href="#data-step" id="toc-data-step">Data step</a>
+  - <a href="#procedure-proc-step" id="toc-procedure-proc-step">Procedure
+    (Proc) step</a>
+  - <a href="#global-statements" id="toc-global-statements">Global
+    statements</a>
+- <a href="#exporting-data" id="toc-exporting-data">Exporting data</a>
+- <a href="#simple-syntax-error-solving-steps"
+  id="toc-simple-syntax-error-solving-steps">Simple Syntax error solving
+  steps</a>
+- <a href="#column-lengths" id="toc-column-lengths">Column lengths</a>
+- <a href="#missing-values" id="toc-missing-values">Missing values</a>
+- <a href="#libraries" id="toc-libraries">Libraries</a>
+- <a href="#working-with-excel-data"
+  id="toc-working-with-excel-data">Working with excel data</a>
+- <a href="#importing-unstructured-data"
+  id="toc-importing-unstructured-data">Importing unstructured data</a>
+- <a href="#procedures" id="toc-procedures">Procedures</a>
+- <a href="#where-statement" id="toc-where-statement">WHERE statement</a>
+  - <a href="#missing-values-and-where-statements"
+    id="toc-missing-values-and-where-statements">Missing values and WHERE
+    statements</a>
+  - <a href="#wildcards-for-where-statements"
+    id="toc-wildcards-for-where-statements">Wildcards for WHERE
+    statements</a>
+- <a href="#format-statements" id="toc-format-statements">Format
+  statements</a>
+  - <a href="#decimals" id="toc-decimals">Decimals</a>
+  - <a href="#date" id="toc-date">Date</a>
+- <a href="#combining-statement" id="toc-combining-statement">combining
+  statement</a>
+- <a href="#macro-variables" id="toc-macro-variables">Macro variables</a>
+- <a href="#formatting-your-output"
+  id="toc-formatting-your-output">Formatting your output</a>
+- <a href="#sorting-values" id="toc-sorting-values">Sorting values</a>
+- <a href="#deleting-duplicates" id="toc-deleting-duplicates">Deleting
+  duplicates</a>
+- <a href="#creating-new-columns" id="toc-creating-new-columns">Creating
+  new Columns</a>
+  - <a href="#using-functions" id="toc-using-functions">Using Functions</a>
+- <a href="#conditional-processing-with-if-thenelse"
+  id="toc-conditional-processing-with-if-thenelse">Conditional Processing
+  with IF-THEN/ELSE</a>
+  - <a href="#processing-multiple-statements-with-if-thendo"
+    id="toc-processing-multiple-statements-with-if-thendo">Processing
+    Multiple Statements with IF-THEN/DO</a>
+- <a href="#report" id="toc-report">Report</a>
+  - <a href="#using-titles-and-footnotes"
+    id="toc-using-titles-and-footnotes">Using Titles and Footnotes</a>
+  - <a href="#lables-for-column-names"
+    id="toc-lables-for-column-names">Lables for column names</a>
+  - <a href="#segmenting-reports" id="toc-segmenting-reports">Segmenting
+    Reports</a>
+  - <a href="#no-observations" id="toc-no-observations">No observations</a>
+  - <a href="#frequency-report" id="toc-frequency-report">Frequency
+    report</a>
+  - <a href="#summary-statistics-report"
+    id="toc-summary-statistics-report">Summary Statistics Report</a>
+- <a href="#ods-statment" id="toc-ods-statment">ODS statment</a>
+- <a href="#sql" id="toc-sql">SQL</a>
 
 # SAS steps
 
@@ -112,7 +173,7 @@ PROC contents data=storm_damage_import;
 run;
 ```
 
-# Procudures
+# Procedures
 
 Print: creates a listing of all rows and columns of the data.  
 Means: simple summary statistics (N Mean Std dev Min Max).  
@@ -294,7 +355,7 @@ There are no quotation marks. However, if you reference the macro
 variable you need to put quotation marks if you would have normally and
 they always need to be double quotation marks.
 
-# Formating your output
+# Formatting your output
 
 In the case of Money or dates it might be useful or necessary to look at
 a formatted output because raw data does not make sense. In this case
@@ -350,7 +411,7 @@ Run;
 **If you use the same name as an existing column, you will overwrite
 that one**
 
-### New Column lenght
+### New Column length
 
 Your new column will use the length of the first variable you assign to
 it. To be on the safe side you can choose to define this yourself. If

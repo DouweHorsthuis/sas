@@ -2,7 +2,10 @@
 title: "SAS Course part 1 out of 4"
 author: "Douwe Horsthuis"
 date: "`r Sys.Date()`"
-output: github_document
+output:
+  github_document:
+    toc: true
+    toc_depth: 2
 editor_options: 
   markdown: 
     wrap: 72
@@ -108,8 +111,7 @@ PROC contents data=storm_damage_import;
 run;
 ```
 
-# Procudures
-
+# Procedures 
 Print: creates a listing of all rows and columns of the data.\
 Means: simple summary statistics (N Mean Std dev Min Max).\
 Univariate: more detailed summary statistics.\
@@ -248,7 +250,7 @@ There are no quotation marks. However, if you reference the macro
 variable you need to put quotation marks if you would have normally and
 they always need to be double quotation marks.
 
-# Formating your output
+# Formatting your output
 
 In the case of Money or dates it might be useful or necessary to look at
 a formatted output because raw data does not make sense. In this case
@@ -304,7 +306,7 @@ Run;
 **If you use the same name as an existing column, you will overwrite
 that one**
 
-### New Column lenght
+### New Column length
 
 Your new column will use the length of the first variable you assign to
 it. To be on the safe side you can choose to define this yourself. If

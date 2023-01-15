@@ -1,0 +1,13 @@
+---
+title: "SAS Course part 3 out of 4"
+author: "Douwe Horsthuis"
+date: "`r Sys.Date()`"
+output:
+  github_document:
+    toc: true
+    toc_depth: 2
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+

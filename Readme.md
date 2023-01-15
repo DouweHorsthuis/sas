@@ -40,6 +40,9 @@ multiple tables), Do Loops (Iterative DO loops, Conditional DO loops,
 Combining both types of DO loops,Restructuring Data (Restructuring table
 structures, Transposing)\].
 
-Course 3: TO BE STARTED
+Course 3: [Preparing for the SAS Programming Certification
+Exam](https://github.com/DouweHorsthuis/sas/blob/main/SAS-Course-part-3-out-of-4.md)
+
+Subjects: \[
 
 Course 4: TO BE STARTED

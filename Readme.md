@@ -10,7 +10,8 @@ Douwe Horsthuis
 This Repo contains course summaries tasks and self written summaries for
 the Coursera course **SAS Programmer Specialization.** There are 4
 courses that lead to a Professional Certificate. Each course has it’s
-own summary:
+own summary and activities. To do the activities see the screenshot that
+explain how to upload the files to SAS. To go to the summaries:
 
 Course 1: [Getting Started With SAS
 Programming](https://github.com/DouweHorsthuis/sas/blob/main/SAS-Course-part-1-out-of-4.md)

@@ -2,7 +2,10 @@
 title: "SAS Course part 2 out of 4"
 author: "Douwe Horsthuis"
 date: "`r Sys.Date()`"
-output: github_document
+output:
+  github_document:
+    toc: true
+    toc_depth: 2
 editor_options: 
   markdown: 
     wrap: 72
@@ -37,11 +40,11 @@ referenced in the DATA step and its attributes, including the column
 name,type and length. It looks like a one-row table because the PDV is
 used in the execution phase to hold and manipulate one row of data at a
 time. It's important to know that SAS uses the first reference of a
-column to set these attributes, that is why for example length staments
-need to be at the start of the data step. Another important thing to
-note is that a drop statement doesn't drop a column instantly, it only
-marks the column as needing to be dropped, so only after the statement
-is completed will the column be dropped.
+column to set these attributes, that is why for example length
+statements need to be at the start of the data step. Another important
+thing to note is that a drop statement doesn't drop a column instantly,
+it only marks the column as needing to be dropped, so only after the
+statement is completed will the column be dropped.
 
 The following happen in the compilation stage, or are
 "compile-time-statements"
@@ -66,7 +69,7 @@ SAS does 5 things in the execution phase:
 
 # Debugging
 
-## Sas Enterprize debugger
+## SAS Enterprise debugger
 
 When you use the software (enterprise) you can use the debugger. This
 will show you line by line if you run into errors and how your data
@@ -75,7 +78,7 @@ how it impacts your code.**
 
 ### Watchpoint
 
-You can add a "watchpoint" by clicking on the checkboxes in the
+You can add a "watchpoint" by clicking on the check boxes in the
 debugger. If you do this, the debugger will run until that value
 changes.
 
@@ -206,8 +209,8 @@ SAS uses a lot of functions. Here are some useful ones:
     -   `ANYDTDTEw.` which stands for any date format. It takes longer
         to calculate, but allows for dates that are not all written the
         same way to be turned into the same type of values. if the date
-        is ambigues (1/12/2022, which can be januari 12th or first of
-        december, it uses the clock of your computer. This means it
+        is ambiguous (1/12/2022, which can be January 12th or first of
+        December, it uses the clock of your computer. This means it
         won't be aware that people in the US don't know how to write
         dates in a sensible way. You can adress this by using the
         `DATESTYLE=MDY or DMY` option.
@@ -268,7 +271,7 @@ RUN;
 
     -   in quotation marks
 
--   You can use multiple formats in one statment
+-   You can use multiple formats in one statement
 
 See this example, where C will become complete and I will become
 Incomplete:
@@ -525,7 +528,7 @@ match the second row of table two like so:
 
 ![SAS will look if the previous rows match. Like this SAS doesn't just
 merges row z for table x with row z for table y, but also checks if row
-z-1 from table y matches. ](images/image-1364642678.png)
+z-1 from table y matches.](images/image-1364642678.png)
 
 ## Merging non-matching rows
 
@@ -556,10 +559,10 @@ To include people that are in both table you can add:
 ### Merging tables with extra matching Column Names
 
 If you have tables that have column names that match, SAS will overwrite
-the value for each subsequenct table. So only the last table that is
+the value for each subsequent table. So only the last table that is
 referenced will have their value stored. This can be a problem as shown
 in the example below. By using the
-`(rename=OrgColumnName=NewColumnName))` statement you can preverent this
+`(rename=OrgColumnName=NewColumnName))` statement you can prevent this
 overwriting.
 
 ![](images/image-264731960.png)
@@ -577,10 +580,122 @@ can do it in one statement. There are advantages to either way of doing
 it:
 
 | DATA step merge                                                           | PROC SQL join                                                                      |
-|---------------------------------------------------------------------------|------------------------------------------------------------------------------------|
+|----------------------------------|--------------------------------------|
 | requires sorted input data                                                | does not require sorted data                                                       |
 | efficient, sequential processing                                          | matching columns do not need the same name                                         |
 | can create multiple output tables for matches and non-matches in one step | easy to define complex matching criteria between multiple tables in a single query |
 | provides addition complex data processing syntax                          | can be used to create Cartesian product for many to many joins                     |
 
 : DATA step Merge VS PROC SQL join
+
+# Do Loops
+
+instead of having repetitive code, you can use DO Loops
+
+## Iterative DO loops
+
+One version of this is the iterative DO loop. This do loop will be used
+for the amount of iterations that you code it for. This can look like
+this:
+
+``` sas
+DO index-column=start TO stop <by increment>;*default increment =1
+... repetitive code ...
+END;
+```
+
+This could look like this:
+
+``` sas
+DO Year = 1 to 3;
+  ProjectedSales=ProjectedSales*1.05;
+  output;
+end;
+```
+
+You do NOT need an explicit `output`. If you leave it out, only the last
+iteration will become a row. However, your index column will be one
+higher than your range.
+
+*Remember that it's sometimes very important to reset a `do loop`* *to 0
+before running it.*
+
+## Conditional DO loops
+
+The other version of a DO loop is the conditional DO loop. This requires
+an `until` or `while` statement. They will look like this:
+
+``` sas
+*until loop - executes repetitively until a condition is true;
+DO UNTIL (expression);
+... repetative code ...
+END;
+*While loop - executes repetitively while a condition is true;
+DO WHILE (expession);
+... repetative code ...
+END;
+```
+
+These are some real examples:
+
+``` sas
+do until (Savings>3000);
+  Month+1;
+  Savings+Amount;
+end;
+
+do while (Savings<=3000);
+  Month+1;
+  Savings+Amount;
+end;
+```
+
+### Difference between do until and do while
+
+The condition is always checked at the **end** for the `do until` loop.
+
+The condition is always checked at the **start** for the `do while`
+loop.
+
+## Combining both types of DO loops
+
+You can combine the both types of do loops like this:
+
+``` sas
+DO index-column = start TO stop <by increment> UNTIL | While (expression);
+```
+
+Here it will stop either when it reaches the `stop` amount, OR when it
+reaches the `until` or `while` amount (you would choose one of these 2
+of course.
+
+# Restructuring Data
+
+To understand restructuring it's important to understand Table
+structures
+
+## Restructuring table structures
+
+There are 2 types of table structures a wide table and a narrow table.
+See these examples:
+
+![](images/image-571465850.png)
+
+If you would want to do an mean of everything in the TestScore Column
+you need a narrow table, otherwise a wide table might be easier.
+
+## Transposing 
+
+You can also transpose data. For this you can use the following code:
+
+``` SAS
+PROC TRANSPOSE DATA=input-table <OUT=output-tabel> <prefix=PrefixName> <Name=cColumnName>;
+  <ID col-name;>
+  <VAR col-name(s);>
+  <BY col-name(s);>*needs to be sorted first
+RUN;
+```
+
+\*The optional `prefix` statement will add that name to the all the
+transposed columns, adding a number behind it. The optional `Name`
+statement replaces the generic NAME column.

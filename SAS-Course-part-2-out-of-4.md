@@ -1,7 +1,52 @@
 SAS Course part 2 out of 4
 ================
 Douwe Horsthuis
-2023-01-13
+2023-01-15
+
+- <a href="#data-step" id="toc-data-step">Data step</a>
+  - <a href="#order" id="toc-order">Order</a>
+- <a href="#debugging" id="toc-debugging">Debugging</a>
+  - <a href="#sas-enterprise-debugger" id="toc-sas-enterprise-debugger">SAS
+    Enterprise debugger</a>
+  - <a href="#online-platform" id="toc-online-platform">Online platform</a>
+  - <a href="#implicit-and-explicit-outputs"
+    id="toc-implicit-and-explicit-outputs">Implicit and explicit outputs</a>
+  - <a href="#accumulating-column" id="toc-accumulating-column">Accumulating
+    column</a>
+- <a href="#functions" id="toc-functions">Functions</a>
+  - <a href="#calculation" id="toc-calculation">Calculation</a>
+  - <a href="#formatting" id="toc-formatting">Formatting</a>
+  - <a href="#character-functions" id="toc-character-functions">Character
+    functions</a>
+  - <a href="#call-routine" id="toc-call-routine">Call routine</a>
+  - <a href="#converting-column-type"
+    id="toc-converting-column-type">Converting column type</a>
+- <a href="#combining-tables" id="toc-combining-tables">Combining
+  tables</a>
+  - <a href="#concatenating-tables"
+    id="toc-concatenating-tables">Concatenating tables</a>
+  - <a href="#one-to-one-merge" id="toc-one-to-one-merge">One-to-one
+    merge</a>
+  - <a href="#one-to-many-merge" id="toc-one-to-many-merge">One-to-many
+    merge</a>
+  - <a href="#merging-non-matching-rows"
+    id="toc-merging-non-matching-rows">Merging non-matching rows</a>
+  - <a href="#merging-multiple-tables"
+    id="toc-merging-multiple-tables">Merging multiple tables</a>
+- <a href="#do-loops" id="toc-do-loops">Do Loops</a>
+  - <a href="#iterative-do-loops" id="toc-iterative-do-loops">Iterative DO
+    loops</a>
+  - <a href="#conditional-do-loops"
+    id="toc-conditional-do-loops">Conditional DO loops</a>
+  - <a href="#combining-both-types-of-do-loops"
+    id="toc-combining-both-types-of-do-loops">Combining both types of DO
+    loops</a>
+- <a href="#restructuring-data" id="toc-restructuring-data">Restructuring
+  Data</a>
+  - <a href="#restructuring-table-structures"
+    id="toc-restructuring-table-structures">Restructuring table
+    structures</a>
+  - <a href="#transposing" id="toc-transposing">Transposing</a>
 
 # Data step
 
@@ -32,11 +77,11 @@ referenced in the DATA step and its attributes, including the column
 name,type and length. It looks like a one-row table because the PDV is
 used in the execution phase to hold and manipulate one row of data at a
 time. It’s important to know that SAS uses the first reference of a
-column to set these attributes, that is why for example length staments
-need to be at the start of the data step. Another important thing to
-note is that a drop statement doesn’t drop a column instantly, it only
-marks the column as needing to be dropped, so only after the statement
-is completed will the column be dropped.
+column to set these attributes, that is why for example length
+statements need to be at the start of the data step. Another important
+thing to note is that a drop statement doesn’t drop a column instantly,
+it only marks the column as needing to be dropped, so only after the
+statement is completed will the column be dropped.
 
 The following happen in the compilation stage, or are
 “compile-time-statements”
@@ -61,7 +106,7 @@ SAS does 5 things in the execution phase:
 
 # Debugging
 
-## Sas Enterprize debugger
+## SAS Enterprise debugger
 
 When you use the software (enterprise) you can use the debugger. This
 will show you line by line if you run into errors and how your data
@@ -70,7 +115,7 @@ how it impacts your code.**
 
 ### Watchpoint
 
-You can add a “watchpoint” by clicking on the checkboxes in the
+You can add a “watchpoint” by clicking on the check boxes in the
 debugger. If you do this, the debugger will run until that value
 changes.
 
@@ -198,10 +243,11 @@ SAS uses a lot of functions. Here are some useful ones:
   - `ANYDTDTEw.` which stands for any date format. It takes longer to
     calculate, but allows for dates that are not all written the same
     way to be turned into the same type of values. if the date is
-    ambigues (1/12/2022, which can be januari 12th or first of december,
-    it uses the clock of your computer. This means it won’t be aware
-    that people in the US don’t know how to write dates in a sensible
-    way. You can adress this by using the `DATESTYLE=MDY or DMY` option.
+    ambiguous (1/12/2022, which can be January 12th or first of
+    December, it uses the clock of your computer. This means it won’t be
+    aware that people in the US don’t know how to write dates in a
+    sensible way. You can adress this by using the
+    `DATESTYLE=MDY or DMY` option.
 
 ## Formatting
 
@@ -259,7 +305,7 @@ RUN;
 
   - in quotation marks
 
-- You can use multiple formats in one statment
+- You can use multiple formats in one statement
 
 See this example, where C will become complete and I will become
 Incomplete:
@@ -546,10 +592,10 @@ To include people that are in both table you can add:
 ### Merging tables with extra matching Column Names
 
 If you have tables that have column names that match, SAS will overwrite
-the value for each subsequenct table. So only the last table that is
+the value for each subsequent table. So only the last table that is
 referenced will have their value stored. This can be a problem as shown
 in the example below. By using the
-`(rename=OrgColumnName=NewColumnName))` statement you can preverent this
+`(rename=OrgColumnName=NewColumnName))` statement you can prevent this
 overwriting.
 
 ![](images/image-264731960.png)
@@ -574,3 +620,115 @@ it:
 | provides addition complex data processing syntax                          | can be used to create Cartesian product for many to many joins                     |
 
 DATA step Merge VS PROC SQL join
+
+# Do Loops
+
+instead of having repetitive code, you can use DO Loops
+
+## Iterative DO loops
+
+One version of this is the iterative DO loop. This do loop will be used
+for the amount of iterations that you code it for. This can look like
+this:
+
+``` sas
+DO index-column=start TO stop <by increment>;*default increment =1
+... repetitive code ...
+END;
+```
+
+This could look like this:
+
+``` sas
+DO Year = 1 to 3;
+  ProjectedSales=ProjectedSales*1.05;
+  output;
+end;
+```
+
+You do NOT need an explicit `output`. If you leave it out, only the last
+iteration will become a row. However, your index column will be one
+higher than your range.
+
+*Remember that it’s sometimes very important to reset a `do loop`* *to 0
+before running it.*
+
+## Conditional DO loops
+
+The other version of a DO loop is the conditional DO loop. This requires
+an `until` or `while` statement. They will look like this:
+
+``` sas
+*until loop - executes repetitively until a condition is true;
+DO UNTIL (expression);
+... repetative code ...
+END;
+*While loop - executes repetitively while a condition is true;
+DO WHILE (expession);
+... repetative code ...
+END;
+```
+
+These are some real examples:
+
+``` sas
+do until (Savings>3000);
+  Month+1;
+  Savings+Amount;
+end;
+
+do while (Savings<=3000);
+  Month+1;
+  Savings+Amount;
+end;
+```
+
+### Difference between do until and do while
+
+The condition is always checked at the **end** for the `do until` loop.
+
+The condition is always checked at the **start** for the `do while`
+loop.
+
+## Combining both types of DO loops
+
+You can combine the both types of do loops like this:
+
+``` sas
+DO index-column = start TO stop <by increment> UNTIL | While (expression);
+```
+
+Here it will stop either when it reaches the `stop` amount, OR when it
+reaches the `until` or `while` amount (you would choose one of these 2
+of course.
+
+# Restructuring Data
+
+To understand restructuring it’s important to understand Table
+structures
+
+## Restructuring table structures
+
+There are 2 types of table structures a wide table and a narrow table.
+See these examples:
+
+![](images/image-571465850.png)
+
+If you would want to do an mean of everything in the TestScore Column
+you need a narrow table, otherwise a wide table might be easier.
+
+## Transposing
+
+You can also transpose data. For this you can use the following code:
+
+``` sas
+PROC TRANSPOSE DATA=input-table <OUT=output-tabel> <prefix=PrefixName> <Name=cColumnName>;
+  <ID col-name;>
+  <VAR col-name(s);>
+  <BY col-name(s);>*needs to be sorted first
+RUN;
+```
+
+\*The optional `prefix` statement will add that name to the all the
+transposed columns, adding a number behind it. The optional `Name`
+statement replaces the generic NAME column.
